@@ -1,11 +1,8 @@
-/*
-Copyright 2014-2015, Gil Ferraz e Teresa Loureiro
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
 
 typedef struct nombreDeBatiment
 {
@@ -527,7 +524,7 @@ int menuInitial()
 
 	printf("MENU\n");//
 	printf("1 - Nouvelle partie\n");//
-	printf("2 - continuer\n");//
+	printf("2 - Continuer\n");//
 	printf("3 - Credit\n");//
 	scanf("%d", &option);//
 
@@ -554,7 +551,7 @@ int selectionJoueures()
 	{
 		printf("Quel est le nom du joueur %d: ", i + 1);//
         fgets(Joueures[i].Nom, 50, stdin);//
-		Joueures[i].compte = 200;//
+		Joueures[i].compte = 1500;//
         Joueures[i].position=0;
 		Joueures[i].prison = false;//
 		Joueures[i].carteSortiedePrison=0;
@@ -563,14 +560,16 @@ int selectionJoueures()
 }
 
 //prison
-void prison(int player)
+void prison(int player, int nJoueures)
 {
     int i = player;//
+    int j=0;
 	printf("Vous devez faire un double pour sortir de prison.\n");//
 	int de1, de2;//
 
 	de1 = (rand() % 6) + 1;//
 	de2 = (rand() % 6) + 1;//
+	//de1=1; de2=2;
 	printf("Lancer: %d + %d = %d\n", de1, de2, de1 + de2);//
 
 	if (de1 == de2)//
@@ -578,16 +577,84 @@ void prison(int player)
 		printf("Sortez de prison !\n");//
 		Joueures[i].prison = false;//
 		Joueures[i].position = 10+de1+de2;//
+
 	}
 	else if(Joueures[i].carteSortiedePrison > 0)
 	{
-	    printf("Sortez de prison !\n");//
+	    printf("Vous avez utiliser votre carte de sortie de prison\n");//
+	    printf("Sortez de prison !\n");
 		Joueures[i].prison = false;//
-		Joueures[i].position = 10;//
+		Joueures[i].position = 10+de1+de2;//
 		Joueures[i].carteSortiedePrison -= 1;
+
 	}
 
-	else Joueures[i].prison = true;//
+	else {Joueures[i].prison = true;//
+
+	int option = 0;//
+        menuJoueur://
+			printf("\n Qu'est-ce que tu veux faire?\n");//
+			printf("1 - Acheter une carte de sortie de prison\n");//
+            printf("2 - Payer une amende de 50M pour sortir\n");//
+			printf("0 - Rester en prison\n");//
+
+
+			scanf("%d", &option);//
+			switch (option)//
+			{
+			//1 - Acheter une carte a un autre joueur
+			case 1: for (j=0;j<nJoueures;j++)
+                    {
+                        if (Joueures[j].carteSortiedePrison==1)
+                        {
+                            int option1=0;
+                            printf(" %s voulez vous vendre votre carte de sortie de prison\n",Joueures[j].Nom);
+                            printf(" 1 - Oui\n");//
+                            printf(" 0 - Non\n");//
+                            printf("saisir une option: ");//
+                            scanf("%d", &option1);//
+                            if (option1==1)
+                            {
+                                int prix;
+                                printf("%s a quel prix voulez vous la vendre\n",Joueures[j].Nom);
+                                printf("saisir le prix: \n");//
+                                scanf("%d", &prix);//
+                                if (prix<Joueures[i].compte)
+                                Joueures[j].carteSortiedePrison -= 1;
+                                Joueures[j].compte += 50;
+                                Joueures[i].compte -= 50;
+                                printf("Vous avez achete une carte sortie de prison a %s.\n",Joueures[j].Nom);
+                                printf("Vous avez utiliser votre carte de sortie de prison\n");//
+                                printf("Sortez de prison !\n");
+                                Joueures[i].prison = false;//
+                                Joueures[i].position = 10;//
+                                printf(" * place : Case %d - %s\n", Joueures[i].position, Proprietes[Joueures[i].position].Nom);//
+                            }
+                        }
+                        else printf("personne n'a de carte de sorti de prison\n");//
+                    }//
+				break;//
+
+			//2 - Payer une amende
+			case 2:     Joueures[i].prison = false;
+                        Joueures[i].position=10;
+                        Joueures[i].compte -= 50;
+                        printf("Vous avez payez une amende de 50M \n");
+                        printf(" * place : Case %d - %s\n", Joueures[i].position, Proprietes[Joueures[i].position].Nom);//
+				break;//
+
+			//0 - Terminer le tour
+			case 0://
+				break;//
+
+			//option Invalide
+			default://
+				printf("Erreur! Veuillez saisir une option valide : ");//
+				fflush(stdin);//
+				goto menuJoueur;//
+				break;//
+			}
+	}
 }
 
 //Lancer de dés
@@ -595,10 +662,13 @@ int lancerDedes(int player)
 {
 	int de1 = 0, de2 = 0, total = 0, compteur = 0,i = player;//
 
+
+
 	printf("\n========== Lancer de des ==========\n");//
 	do
 	{
 		de1 = (rand() % 6) + 1; de2 = (rand() % 6) + 1;//
+		//de1=1; de2=0;
         //de1=1;de2=1;
 		printf(" * %d Lancer: %d + %d = %d\n", compteur + 1, de1, de2, de1 + de2);//
 		total += de1 + de2;//
@@ -628,6 +698,144 @@ int lancerDedes(int player)
         return (0);
 	}
 	else return (total);//
+}
+
+void loyer(int player, int nJoueures)
+{
+    int i=player;
+    int j=0;
+    int de1=0;
+    int de2=0;
+    int Couleurcompteur = 0;//compteur couleur
+    int Couleurcompteur1 = 0;//compteur couleur
+    int Couleurcompteur2 = 0;//compteur couleur
+    int nbmaison=Proprietes[Joueures[i].position].nombreDeMaisons;
+
+    for (j=0;j<nJoueures;j++)
+    {
+
+            for (int l = 0; l < 40; l++)//
+            {
+                //Stocke les codes des propriété ayant la même Couleur
+
+                    if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur, Proprietes[l].Couleur) == 0)&&(strcmp(Proprietes[l].proprietaire, Joueures[j].Nom) == 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur,"Gare") != 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur, "Services") != 0)&&(Proprietes[Joueures[i].position].hypotheque==false))//
+                    {
+                        Couleurcompteur++;//
+                        printf("compteur : %d\n",Couleurcompteur);
+                    }
+
+            }
+             if ((Couleurcompteur == 3)&&(strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur,"Gare") != 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur, "Services") != 0)&&(Proprietes[Joueures[i].position].hypotheque==false))//
+            {
+                    printf("%s Vous devez payer %d a %s \n",Joueures[i].Nom ,Proprietes[Joueures[i].position].loyer[0]*2,Joueures[j].Nom);//
+                    printf("Compte actuel de %s : %d\n",Joueures[i].Nom ,Joueures[i].compte);//
+                    Joueures[i].compte -= (Proprietes[Joueures[i].position].loyer[0]*2) ;
+                    printf("Compte actuel de %s : %d\n",Joueures[i].Nom ,Joueures[i].compte);//
+
+                    printf("Compte actuel de %s : %d\n",Joueures[j].Nom ,Joueures[j].compte);//
+                    Joueures[j].compte += (Proprietes[Joueures[i].position].loyer[0]*2) ;
+                    printf("Compte actuel de %s : %d\n",Joueures[j].Nom ,Joueures[j].compte);//
+                    printf("virement accompli !\n");
+
+
+            }
+
+
+        else if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur,"Gare") != 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur, "Services") != 0)&&(Proprietes[Joueures[i].position].hypotheque==false))
+        {
+            printf("%s Vous devez payer %d \n",Joueures[i].Nom,Proprietes[Joueures[i].position].loyer[0] );//
+            Joueures[i].compte -= Proprietes[Joueures[i].position].loyer[nbmaison] ;
+            Joueures[j].compte += Proprietes[Joueures[i].position].loyer[nbmaison] ;
+            printf("virement accompli !!\n");
+            printf("\nCompte actuel de %s : %d\n",Joueures[i].Nom ,Joueures[i].compte);//
+            printf("\nCompte actuel de %s : %d\n",Joueures[j].Nom ,Joueures[j].compte);//
+        }
+        else if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0)&&(Proprietes[Joueures[i].position].hypotheque==false)&&(strcmp(Proprietes[Joueures[i].position].Couleur,"Gare" ) == 0))
+        {
+          for (int l = 0; l < 40; l++)//
+            {
+                //Stocke les codes des propriété ayant la même Couleur
+
+                    if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur, Proprietes[l].Couleur) == 0)&&(strcmp(Proprietes[l].proprietaire, Joueures[j].Nom) == 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur,"Gare") == 0)&&(Proprietes[Joueures[i].position].hypotheque==false))//
+                    {
+                        Couleurcompteur1++;//
+                        printf("compteur : %d\n",Couleurcompteur1);
+                    }
+            }
+            if (Couleurcompteur1 == 1)//
+            {
+                    Joueures[i].compte -= 25 ;
+                    Joueures[j].compte += 25 ;
+                    printf("virement accompli !!!\n");
+                    printf("\nCompte actuel de %s : %d",Joueures[i].Nom ,Joueures[i].compte);//
+                    printf("\nCompte actuel de %s : %d\n",Joueures[j].Nom ,Joueures[j].compte);//
+            }
+            if (Couleurcompteur1 == 2)//
+            {
+                    Joueures[i].compte -= 50 ;
+                    Joueures[j].compte += 50 ;
+                    printf("virement accompli !!!\n");
+                    printf("\nCompte actuel de %s : %d",Joueures[i].Nom ,Joueures[i].compte);//
+                    printf("\nCompte actuel de %s : %d\n",Joueures[j].Nom ,Joueures[j].compte);//
+            }
+            if (Couleurcompteur1 == 3)//
+            {
+                    Joueures[i].compte -= 100 ;
+                    Joueures[j].compte += 100 ;
+                    printf("virement accompli !!!\n");
+                    printf("\nCompte actuel de %s : %d",Joueures[i].Nom ,Joueures[i].compte);//
+                    printf("\nCompte actuel de %s : %d\n",Joueures[j].Nom ,Joueures[j].compte);//
+            }
+            if (Couleurcompteur1 == 4)//
+            {
+                    Joueures[i].compte -= 200 ;
+                    Joueures[j].compte += 200 ;
+                    printf("virement accompli !!!\n");
+                    printf("\nCompte actuel de %s : %d",Joueures[i].Nom ,Joueures[i].compte);//
+                    printf("\nCompte actuel de %s : %d\n",Joueures[j].Nom ,Joueures[j].compte);//
+            }
+
+        }
+        else if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0)&&(Proprietes[Joueures[i].position].hypotheque==false)&&(strcmp(Proprietes[Joueures[i].position].Couleur,"Services" ) == 0))
+        {
+          for (int l = 0; l < 40; l++)//
+            {
+                //Stocke les codes des propriété ayant la même Couleur
+
+                    if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur, Proprietes[l].Couleur) == 0)&&(strcmp(Proprietes[l].proprietaire, Joueures[j].Nom) == 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur, "Services") == 0)&&(Proprietes[Joueures[i].position].hypotheque==false))//
+                    {
+                        Couleurcompteur2++;//
+                        printf("compteur : %d\n",Couleurcompteur2);
+                    }
+            }
+            if (Couleurcompteur2 == 1)//
+            {
+                    printf("\n========== Lancer de des ==========\n");//
+                    de1 = (rand() % 6) + 1;
+                    de2 = (rand() % 6) + 1;//
+                    printf("Lancer: %d + %d = %d\n",de1, de2, de1 + de2);//
+                    printf("Vous devez payer 4 fois le montant indiquer par les des soit %d\n",4*(de1 + de2));//
+                    Joueures[i].compte -= 4*(de1+de2);
+                    Joueures[j].compte += 4*(de1+de2);
+                    printf("virement accompli !!!!\n");
+                    printf("\nCompte actuel de %s : %d",Joueures[i].Nom ,Joueures[i].compte);//
+                    printf("\nCompte actuel de %s : %d\n",Joueures[j].Nom ,Joueures[j].compte);//
+            }
+            if (Couleurcompteur2 == 2)//
+            {
+                    printf("\n========== Lancer de des ==========\n");//
+                    de1 = (rand() % 6) + 1;
+                    de2 = (rand() % 6) + 1;//
+                    printf("Lancer: %d + %d = %d\n",de1, de2, de1 + de2);//
+                    printf("Vous devez payer 10 fois le montant indiquer par les des soit %d\n",10*(de1 + de2));//
+                    Joueures[i].compte -= 10*(de1+de2);
+                    Joueures[j].compte += 10*(de1+de2);
+                    printf("virement accompli !!!!\n");
+                    printf("\nCompte actuel de %s : %d",Joueures[i].Nom ,Joueures[i].compte);//
+                    printf("\nCompte actuel de %s : %d\n",Joueures[j].Nom ,Joueures[j].compte);//
+            }
+        }
+    }
 }
 
 //Calculer la nouvelle position du Joueur apres le Lancer de des
@@ -664,6 +872,9 @@ void etatduJeu(int nplayer)
 			{
 				printf("\n========== Joueur %d - %s ==========\n", i + 1, Joueures[i].Nom);//
 				printf(" * Compte        : %d euros\n", Joueures[i].compte);//
+				printf(" * Carte sortie de prison        : %d\n", Joueures[i].carteSortiedePrison);//
+				if(Joueures[i].prison== true){printf(" * En prison        : OUI\n");}
+                else {printf(" * En prison        : NON\n");}
 				printf(" * Place      : Case %d - %s\n", Joueures[i].position, Proprietes[Joueures[i].position].Nom);//
 				printf(" * propriete acquise :\n");//
 				for (int j = 0; j < 40; j++)//
@@ -776,19 +987,34 @@ void vendreConstruction(int player)//
     if (nombreDepropriete>0)
     {
         do{
-        printf("entrez le numero de la propriete a vendre \n");//
+        printf("entrez le numero de la propriete ou il faut vendre un batiment \n");//
         scanf("%d", &numerodelapropriete);//
         }while(strcmp(Proprietes[numerodelapropriete].proprietaire, Joueures[i].Nom) != 0);//
-        printf("Voulez-vous vendre - %s - pour M%d ?\n", Proprietes[numerodelapropriete].Nom, (Proprietes[numerodelapropriete].prix / 2));//
-        printf(" 1 - Oui\n");//
-        printf(" 0 - Non\n");//
-        printf("saisir une option: ");//
-        scanf("%d", &option);//
+        if ((Proprietes[numerodelapropriete].nombreDeMaisons>0))
+        {
+            printf("Voulez-vous vendre une maison - %s - pour M%d ?\n", Proprietes[numerodelapropriete].Nom, (Proprietes[numerodelapropriete].prixMaison / 2));//
+            printf(" 1 - Oui\n");//
+            printf(" 0 - Non\n");//
+            printf("saisir une option: ");//
+            scanf("%d", &option);//
+        }
+        else if (Proprietes[numerodelapropriete].nombreHotel>0)
+        {
+            printf("Voulez-vous vendre un hotel - %s - pour M%d ?\n", Proprietes[numerodelapropriete].Nom, (Proprietes[numerodelapropriete].prixMaison / 2));//
+            printf(" 2 - Oui\n");//
+            printf(" 0 - Non\n");//
+            printf("saisir une option: ");//
+            scanf("%d", &option);//
+        }
+        else
+        {
+            printf("Vous navez pas de batiment\n");
+        }
     }
     else
     {
-        printf("Vous navez pas de propriete");
-        option=2;
+        printf("Vous navez pas de propriete\n");
+        option=3;
     }
 
 
@@ -799,8 +1025,9 @@ menuvente://
 	switch (option)//
 	{
 	case 1://
-		Joueures[i].compte += Proprietes[numerodelapropriete].prix;//
-		strcpy(Proprietes[numerodelapropriete].proprietaire, "aucun proprietaire");//
+		Proprietes[numerodelapropriete].nombreDeMaisons--;//
+        Joueures[i].compte += (Proprietes[numerodelapropriete].prixMaison/2) ;//
+        Batiments.nMaison += 1;
 
 		printf("\nVente complete!\n");//
 		printf("%s a ete vendu par %s.\n", Proprietes[numerodelapropriete].Nom, Joueures[i].Nom);//
@@ -808,7 +1035,17 @@ menuvente://
 		getchar();//
 		break;//
 	case 2://
+	    Proprietes[numerodelapropriete].nombreHotel--;//
+        Joueures[i].compte += (Proprietes[numerodelapropriete].prixMaison/2) ;//
+        Batiments.nHotel += 1;
+
+		printf("\nVente complete!\n");//
+		printf("%s a ete vendu par %s.\n", Proprietes[numerodelapropriete].Nom, Joueures[i].Nom);//
+		fflush(stdin);//
+		getchar();//
 		break;//
+    case 3:
+        break;
 	default://
 		printf("Erreur! Option invalide.\n");//
 		fflush(stdin);//
@@ -905,8 +1142,8 @@ void construireMaison(int player)
 {
 	int i = player;//numero du joueur
 	int Couleurcompteur = 0;//compteur couleur
-	int proprietairecompteur = 0;//
-	int CouleurCodes[3];//
+	//int proprietairecompteur = 0;//
+	//int CouleurCodes[3];//
     int numerodelapropriete=0;//
 	int nombreDepropriete=0;
 	for (int j = 0; j < 40; j++)//
@@ -920,11 +1157,45 @@ void construireMaison(int player)
     if (nombreDepropriete>0)
     {
         do{
-        printf("entrez le numero de la propriete a vendre \n");//
+        printf("entrez le numero de la propriete ou il faut construire une Maison \n");//
         scanf("%d", &numerodelapropriete);//
         }while(strcmp(Proprietes[numerodelapropriete].proprietaire, Joueures[i].Nom) != 0);//
 
-        for (int j = 0; j < 40; j++)//
+        for (int l = 0; l < 40; l++)//
+            {
+                //Stocke les codes des propriété ayant la même Couleur
+
+                    if ((strcmp(Proprietes[numerodelapropriete].proprietaire, Joueures[i].Nom) == 0)&&(strcmp(Proprietes[numerodelapropriete].Couleur, Proprietes[l].Couleur) == 0)&&(strcmp(Proprietes[l].proprietaire, Joueures[i].Nom) == 0)&&(strcmp(Proprietes[numerodelapropriete].Couleur,"Gare") != 0)&&(strcmp(Proprietes[numerodelapropriete].Couleur, "Services") != 0)&&(Proprietes[numerodelapropriete].hypotheque==false))//
+                    {
+                        Couleurcompteur++;//
+                        printf("compteur : %d\n",Couleurcompteur);
+                    }
+
+            }
+             if (Couleurcompteur == 3)//
+            {
+                    if (Batiments.nMaison>0)
+                        {
+                            Proprietes[numerodelapropriete].nombreDeMaisons++;//
+                            Joueures[i].compte -= Proprietes[numerodelapropriete].prixMaison ;//
+                            Batiments.nMaison -= 1;
+                            printf("maison construite avec succes!\n");//
+                            printf("Cette propriete a maintenant %d maison(s).\n", Proprietes[numerodelapropriete].nombreDeMaisons);//
+                        }
+                        else
+                        {
+                            printf("Il n'a plus de maison attendez que des joueurs en vendent.\n");//
+                        }
+
+
+            }
+             else
+                        {
+                            printf("vous ne possedez pas toute les couleurs.\n");//
+                        }
+    }
+
+        /*for (int j = 0; j < 40; j++)//
         {
             //Stocke les codes des propriétaires ayant la même Couleur
             for (int k = 0; k < 3; k++)//
@@ -954,17 +1225,17 @@ void construireMaison(int player)
                         }
                         else
                         {
-                            printf("Il n'a plus de maison attendez que des joueurs en vendent.");//
+                            printf("Il n'a plus de maison attendez que des joueurs en vendent.\n");//
                         }
                     }
-                    else printf("Il n'a pas les %d proprietes necessaires pour construire des maisons.", Couleurcompteur);//
+                    else printf("Il n'a pas les %d proprietes necessaires pour construire des maisons.\n", Couleurcompteur);//
                 }
             }
         }
-    }
+    }*/
     else
     {
-        printf("Vous navez pas de propriete");
+        printf("Vous navez pas de propriete\n");
     }
 }
 
@@ -984,7 +1255,7 @@ void construireHotel(int player)
     if (nombreDepropriete>0)
     {
         do{
-        printf("entrez le numero de la propriete a vendre \n");//
+        printf("entrez le numero de la propriete ou il faut construire un hotel \n");//
         scanf("%d", &numerodelapropriete);//
         }while(strcmp(Proprietes[numerodelapropriete].proprietaire, Joueures[i].Nom) != 0);//
 
@@ -1010,7 +1281,7 @@ void construireHotel(int player)
     }
     else
     {
-        printf("Vous navez pas de propriete");
+        printf("Vous n'avez pas de propriete");
     }
 }
 
@@ -1032,7 +1303,7 @@ void hypothequerPropriete(int player)
     if (nombreDepropriete>0)
     {
         do{
-        printf("entrez le numero de la propriete a vendre \n");//
+        printf("entrez le numero de la propriete a hypothequer \n");//
         scanf("%d", &numerodelapropriete);//
         }while(strcmp(Proprietes[numerodelapropriete].proprietaire, Joueures[i].Nom) != 0);//
         printf("Voulez-vous hypothequer - %s - pour M%d ?\n", Proprietes[numerodelapropriete].Nom, (Proprietes[numerodelapropriete].prix / 2));//
@@ -1053,7 +1324,7 @@ void hypothequerPropriete(int player)
             switch (option)//
             {
             case 1://
-                Joueures[i].compte += (Proprietes[numerodelapropriete].prix / 2);
+                Joueures[i].compte += (Proprietes[numerodelapropriete].prixMaison / 2);
                 Proprietes[numerodelapropriete].hypotheque = true;//
                 printf("La propriete de %s a ete hypothequee.\n", Proprietes[numerodelapropriete].Nom);//
                 fflush(stdin);//
@@ -1075,21 +1346,428 @@ void hypothequerPropriete(int player)
     }
 }
 
-void carteChance()
+void carteChance(int player, int nJoueures)
+{
+    int i=player;
+    int j=0;
+    int de1=0;
+    int de2=0;
+    int de3=0;
+
+    de1 = (rand() % 6) + 1;//
+
+    if(de1==1)
+    {
+        for (j=0;j<nJoueures;j++)
+        {
+            if ((Joueures[j].carteSortiedePrison==0)&&(Joueures[i].carteSortiedePrison==0))
+            {
+                Joueures[i].carteSortiedePrison=1;
+                printf("Vous avez piochez une carte sortie de prison.\n");
+            }
+        }
+    }
+    else if (de1==2)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Amende pour execes de beaute: Payez 15M.");//
+        fflush(stdin);//
+        getchar();//
+        Joueures[i].compte -= 15;//
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+    else if (de1==3)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Vous avez ete elu president du conseil d'administration versez 50M a chaque joueur.");//
+        for (j=0;j<nJoueures;j++)
+        {
+            Joueures[i].compte -= 50;//
+            Joueures[j].compte += 50;//
+            printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+        }
+    }
+    else if (de1==4)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Rendez vous a l'Avenue Henri-Martin si vous passez par la case depart recevez 200M.");//
+        Joueures[i].position = 24;//
+
+    }
+    else if (de1==5)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Avancez jusqu'a la case depart (recevez 200M).");//
+        Joueures[i].position = 0;//
+    }
+    else if (de1==6)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Rendez vous a l'Boulevard de la Villette si vous passez par la case depart recevez 200M.");//
+        Joueures[i].position = 11;//
+    }
+    else if (de1==7)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Rendez vous a la Rue de la Paix si vous passez par la case depart recevez 200M.");//
+        Joueures[i].position = 39;//
+    }
+    else if (de1==8)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Allez a la Gare Montparnasse si vous passez par la case depart recevez 200M.");//
+        Joueures[i].position = 5;//
+    }
+    else if (de1==9)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Reculez de trois case.");//
+        Joueures[i].position -= 3;//
+    }
+    else if (de1==10)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("La banque vous verse un dividende de 50M.");//
+        Joueures[i].compte += 50;//
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+    else if (de1==11)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Votre immeuble et votre pret rapportent. Touchez 150M.");//
+        Joueures[i].compte += 150;//
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+
+    else if (de1==12)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Allez en prison");//
+        Joueures[i].prison = true;//
+    }
+    else if (de1==13)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Vous faites des reparations sur toutes vos proprietes : versez 25M pour chaque maison et 100M pour chaque hotel que vous possedez.");//
+        for (int j = 0; j < 40; j++)//
+        {
+            if (strcmp(Proprietes[j].proprietaire, Joueures[i].Nom) == 0)//
+                {
+                    Joueures[i].compte -= 100*Proprietes[j].nombreHotel;//
+                    Joueures[i].compte -= 25*Proprietes[j].nombreDeMaisons;//
+                }
+        }
+
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+    else if (de1==14)
+    {
+        if ((12<Joueures[i].position)&&(Joueures[i].position < 28))
+        {
+            Joueures[i].position=28;
+            for (j=0;j<nJoueures;j++)
+            {
+                if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0))
+                {
+                    printf("\n========== Lancer de des ==========\n");//
+                    de3 = (rand() % 6) + 1;
+                    de2 = (rand() % 6) + 1;//
+                    printf("Lancer: %d + %d = %d\n",de3, de2, de3 + de2);//
+                    printf("Vous devez payer 10 fois le montant indiquer par les des soit %d\n",de3 + de2);//
+                    Joueures[i].compte -= 10*(de3+de2);
+                    Joueures[j].compte += 10*(de3+de2);
+                }
+            }
+        }
+        if ((28<Joueures[i].position)&&(Joueures[i].position < 12))
+        {
+            Joueures[i].position=12;
+            for (j=0;j<nJoueures;j++)
+            {
+                if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0))
+                {
+                    printf("\n========== Lancer de des ==========\n");//
+                    de3 = (rand() % 6) + 1;
+                    de2 = (rand() % 6) + 1;//
+                    printf("Lancer: %d + %d = %d\n",de3, de2, de3 + de2);//
+                    printf("Vous devez payer 10 fois le montant indiquer par les des soit %d\n",de1 + de2);//
+                    Joueures[i].compte -= 10*(de3+de2);
+                    Joueures[j].compte += 10*(de3+de2);
+                }
+            }
+        }
+    }
+    else if (de1==15)
+    {
+        if ((35<Joueures[i].position)&&(Joueures[i].position < 5))
+        {
+            Joueures[i].position=5;
+            for (j=0;j<nJoueures;j++)
+            {
+                if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0))
+                {
+                    printf("Vous devez payer 10 fois le montant indiquer par les des soit %d\n",de1 + de2);//
+                    loyer(i,nJoueures);
+                    loyer(i,nJoueures);
+                }
+            }
+        }
+        if ((5<Joueures[i].position)&&(Joueures[i].position <15 ))
+        {
+            Joueures[i].position=15;
+            for (j=0;j<nJoueures;j++)
+            {
+                if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0))
+                {
+                    printf("Vous devez payer 2 fois le loyer demander\n");//
+                    loyer(i,nJoueures);
+                    loyer(i,nJoueures);
+
+                }
+            }
+        }
+        if ((15<Joueures[i].position)&&(Joueures[i].position < 25))
+        {
+            Joueures[i].position=25;
+            for (j=0;j<nJoueures;j++)
+            {
+                if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0))
+                {
+                    printf("Vous devez payer 10 fois le montant indiquer par les des soit %d\n",de1 + de2);//
+                    loyer(i,nJoueures);
+                    loyer(i,nJoueures);
+                }
+            }
+        }
+        if ((25<Joueures[i].position)&&(Joueures[i].position < 35))
+        {
+            Joueures[i].position=35;
+            for (j=0;j<nJoueures;j++)
+            {
+                if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0))
+                {
+                    printf("Vous devez payer 2 fois le loyer demander\n");//
+                    loyer(i,nJoueures);
+                    loyer(i,nJoueures);
+
+                }
+            }
+        }
+    }
+    else if (de1==16)
+    {
+        if ((35<Joueures[i].position)&&(Joueures[i].position < 5))
+        {
+            Joueures[i].position=5;
+            for (j=0;j<nJoueures;j++)
+            {
+                if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0))
+                {
+                    printf("Vous devez payer 10 fois le montant indiquer par les des soit %d\n",de1 + de2);//
+                    loyer(i,nJoueures);
+                    loyer(i,nJoueures);
+                }
+            }
+        }
+        if ((5<Joueures[i].position)&&(Joueures[i].position <15 ))
+        {
+            Joueures[i].position=15;
+            for (j=0;j<nJoueures;j++)
+            {
+                if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0))
+                {
+                    printf("Vous devez payer 2 fois le loyer demander\n");//
+                    loyer(i,nJoueures);
+                    loyer(i,nJoueures);
+
+                }
+            }
+        }
+        if ((15<Joueures[i].position)&&(Joueures[i].position < 25))
+        {
+            Joueures[i].position=25;
+            for (j=0;j<nJoueures;j++)
+            {
+                if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0))
+                {
+                    printf("Vous devez payer 10 fois le montant indiquer par les des soit %d\n",de1 + de2);//
+                    loyer(i,nJoueures);
+                    loyer(i,nJoueures);
+                }
+            }
+        }
+        if ((25<Joueures[i].position)&&(Joueures[i].position < 35))
+        {
+            Joueures[i].position=35;
+            for (j=0;j<nJoueures;j++)
+            {
+                if ((strcmp(Proprietes[Joueures[i].position].proprietaire, Joueures[j].Nom) == 0))
+                {
+                    printf("Vous devez payer 2 fois le loyer demander\n");//
+                    loyer(i,nJoueures);
+                    loyer(i,nJoueures);
+
+                }
+            }
+        }
+    }
+}
+
+void carteCaissedeCommunaute(int player, int nJoueures)
+{
+    int i=player;
+    int j=0;
+    int de1=0;
+
+    de1 = (rand() % 6) + 1;//
+
+    if(de1==1)
+    {
+        for (j=0;j<nJoueures;j++)
+        {
+            if ((Joueures[j].carteSortiedePrison==0)&&(Joueures[i].carteSortiedePrison==0))
+            {
+                Joueures[i].carteSortiedePrison=1;
+                printf("Vous avez piochez une carte sortie de prison.\n");
+            }
+            else
+            {
+                de1 = (rand() % 6) + 1;//
+            }
+        }
+    }
+    else if (de1==2)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Vous avez gagne le deuxieme prix de beaute. Recevez 10M.");//
+        fflush(stdin);//
+        getchar();//
+        Joueures[i].compte += 10;//
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+    else if (de1==3)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("C'est votre anniversaire : chaque joueur doit vous donner 10M.");//
+        for (j=0;j<nJoueures;j++)
+        {
+            Joueures[i].compte += 10;//
+            Joueures[j].compte -= 10;//
+            printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+            printf("\nCompte actuel de %s : %d", Joueures[j].Nom,Joueures[j].compte);//
+        }
+    }
+    else if (de1==4)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Vous heritez de 100M.");//
+        Joueures[i].compte += 100;//
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+
+    }
+    else if (de1==5)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Avancez jusqu'a la case depart (recevez 200M).");//
+        Joueures[i].position = 0;//
+    }
+    else if (de1==6)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Les impots vous remboursent 20M.");//
+        Joueures[i].compte += 20;//
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+    else if (de1==7)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Votre assurance vie vous rapporte. Recevez 100M.");//
+        Joueures[i].compte += 100;//
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+    else if (de1==8)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Votre placement vous rapporte. Recevez 100M.");//
+        Joueures[i].compte += 100;//
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+    else if (de1==9)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Erreur de la banque en votre faveur.Recevez 200M.");//
+        Joueures[i].compte += 200;//
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+    else if (de1==10)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("La vente de votre stock vous rapporte 50M.");//
+        Joueures[i].compte += 50;//
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+    else if (de1==11)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Commission d'expert immobilier. Recevez 25M");//
+        Joueures[i].compte += 25;//
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+
+    else if (de1==12)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Allez en prison");//
+        Joueures[i].prison = true;//
+    }
+    else if (de1==13)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Vous devez faire des travaux sur vos proprietes : versez 40M pour chaque maison et 115M pour chaque hotel que vous possedez.");//
+        for (int j = 0; j < 40; j++)//
+        {
+            if (strcmp(Proprietes[j].proprietaire, Joueures[i].Nom) == 0)//
+                {
+                    Joueures[i].compte -= 115*Proprietes[j].nombreHotel;//
+                    Joueures[i].compte -= 40*Proprietes[j].nombreDeMaisons;//
+                }
+        }
+
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+    else if (de1==14)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Frais d'hospitalisation. Payez 100M");//
+        Joueures[i].compte -= 100;//
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+    else if (de1==15)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Visite chez le medecin : Payez 50M.");//
+        Joueures[i].compte -= 50;//
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+    else if (de1==16)
+    {
+        printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
+        printf("Frais de scolarite. Payez 50M");//
+        Joueures[i].compte -= 50;//
+        printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
+    }
+}
+
+void Faillite(int player , int nJoueures)
 {
 
 }
-
-void carteCaissedeCommunaute()
-{
-
-}
-
-
 
 int main()
 {
 	initialiseTable();//
+
+	srand (time(NULL));
 
 	//Début du jeu
 	printf("|================================|==========|================================|\n");
@@ -1130,6 +1808,7 @@ nouveauJeu ://
 	system("cls");//
 
 	int tour = 1;//
+    int compteur =0;
 	//Exécution du tour
 	do
 	{
@@ -1157,8 +1836,26 @@ nouveauJeu ://
                 }
                 else goto menuJoueur;
             }
-            else prison(i);//
-
+            else
+                {
+                  compteur++;
+                if (compteur<4)
+                    {
+                        prison(i,nJoueures);//
+                        Joueures[i].position=30;
+                        goto menuJoueur;
+                    }
+                else
+                    {
+                        compteur=0;
+                        Joueures[i].prison = false;
+                        Joueures[i].position=10;
+                        Joueures[i].compte -= 50;
+                        printf("Vous avez terminer votre peine payez une amende 50M\n");
+                        Joueures[i].position = nouvelleposition(Joueures[i].position, lancerDedes(i));
+                        goto menuJoueur;
+                    }
+                }
 
 			//Vérifier si le Joueur est dans ou a passé la Case Départ
 			if ((Joueures[i].position == 0) || (Joueures[i].position < ancienneposition))//
@@ -1170,51 +1867,125 @@ nouveauJeu ://
 			printf("\nplace actuel = Case %d - %s\n", Joueures[i].position, Proprietes[Joueures[i].position].Nom);//
 
 			//Détails de la maison où se trouve le Joueur
-			if (Proprietes[Joueures[i].position].prix != 0)//
+			if ((Proprietes[Joueures[i].position].prix != 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur, "Gare") != 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur, "Services") != 0))//
 			{
-				printf("\n             Popriete           \n");
-				printf(" __________________________________\n");
-				printf(" |                                |\n");
-				printf(" | %-30.30s |   * Propriete : %s\n", Proprietes[Joueures[i].position].Nom, Proprietes[Joueures[i].position].proprietaire);//
-				printf(" | %-30.30s |\n", Proprietes[Joueures[i].position].localisation);//
-				printf(" |                                |   * maison        : %d\n", Proprietes[Joueures[i].position].nombreDeMaisons);//
-				printf(" |couleur %-11.11sLe prix  $%3d|   * HOTEL        : %d\n", Proprietes[Joueures[i].position].Couleur, Proprietes[Joueures[i].position].prix, Proprietes[Joueures[i].position].nombreDeMaisons);//
-				printf(" | ------------------------------ |\n");
-				printf(" |             Loyer              |\n");
-				printf(" |   Terrain              $%3d    |\n", Proprietes[Joueures[i].position].loyer[0]);//
-				printf(" |                                |\n");
-				printf(" |   Groupe de couleurs   $%3d    |\n", Proprietes[Joueures[i].position].loyer[0] * 2);//
-				printf(" |                                |\n");
-				printf(" |   Avec 1 maison        $%3d    |\n", Proprietes[Joueures[i].position].loyer[1]);//
-				printf(" |                                |\n");
-				printf(" |   Avec 2 maison        $%3d    |\n", Proprietes[Joueures[i].position].loyer[2]);//
-				printf(" |                                |\n");
-				printf(" |   Avec 3 maison        $%3d    |\n", Proprietes[Joueures[i].position].loyer[3]);//
-				printf(" |                                |\n");
-				printf(" |   Avec 4 maison        $%3d    |\n", Proprietes[Joueures[i].position].loyer[4]);//
-				printf(" |                                |\n");
-				printf(" |   Avec un HOTEL        $%3d    |\n", Proprietes[Joueures[i].position].loyer[5]);//
-				printf(" | ------------------------------ |\n");
-				printf(" |  Prix de chaque Maison $%3d    |\n", Proprietes[Joueures[i].position].prixMaison);//
-				printf(" |                                |\n");
-				printf(" |  Prix de chaque Hotel  $%3d    |\n", Proprietes[Joueures[i].position].prixMaison);//
-				printf(" |                                |\n");
-				printf(" |  Montant de l'hypotheque $%3d  |\n", Proprietes[Joueures[i].position].prix/2+Proprietes[Joueures[i].position].prix*10/100);//
-				printf(" | ------------------------------ |\n");
-				printf(" |                                |\n");
-				printf(" __________________________________\n");
+
+				printf("\n             Popriete            \n");
+				printf(" ___________________________________\n");
+				printf(" |                                 |\n");
+				printf(" | %-30.30s  |   * Propriete : %s\n", Proprietes[Joueures[i].position].Nom, Proprietes[Joueures[i].position].proprietaire);//
+				if(Proprietes[Joueures[i].position].hypotheque== true){printf(" |                                 |   * Hypoteque        : OUI\n");}else {printf(" |                                 |   * Hypoteque        : NON\n");}
+				printf(" |                                 |   * maison        : %d\n", Proprietes[Joueures[i].position].nombreDeMaisons);//
+				printf(" |couleur %-11.11sLe prix  $%4d|   * HOTEL        : %d\n", Proprietes[Joueures[i].position].Couleur, Proprietes[Joueures[i].position].prix, Proprietes[Joueures[i].position].nombreHotel);//
+				printf(" | ------------------------------- |\n");
+				printf(" |             Loyer               |\n");
+				printf(" |   Terrain              $%4d    |\n", Proprietes[Joueures[i].position].loyer[0]);//
+				printf(" |                                 |\n");
+				printf(" |   Groupe de couleurs   $%4d    |\n", Proprietes[Joueures[i].position].loyer[0] * 2);//
+				printf(" |                                 |\n");
+				printf(" |   Avec 1 maison        $%4d    |\n", Proprietes[Joueures[i].position].loyer[1]);//
+				printf(" |                                 |\n");
+				printf(" |   Avec 2 maison        $%4d    |\n", Proprietes[Joueures[i].position].loyer[2]);//
+				printf(" |                                 |\n");
+				printf(" |   Avec 3 maison        $%4d    |\n", Proprietes[Joueures[i].position].loyer[3]);//
+				printf(" |                                 |\n");
+				printf(" |   Avec 4 maison        $%4d    |\n", Proprietes[Joueures[i].position].loyer[4]);//
+				printf(" |                                 |\n");
+				printf(" |   Avec un HOTEL        $%4d    |\n", Proprietes[Joueures[i].position].loyer[5]);//
+				printf(" | ------------------------------- |\n");
+				printf(" |  Prix de chaque Maison $%4d    |\n", Proprietes[Joueures[i].position].prixMaison);//
+				printf(" |                                 |\n");
+				printf(" |  Prix de chaque Hotel  $%4d    |\n", Proprietes[Joueures[i].position].prixMaison);//
+				printf(" |                                 |\n");
+				printf(" |  Montant de l'hypotheque $%4d  |\n", Proprietes[Joueures[i].position].prix/2+Proprietes[Joueures[i].position].prix*10/100);//
+				printf(" | ------------------------------- |\n");
+				printf(" |_________________________________|\n");
+
+                    loyer(i,nJoueures);
+                    goto menuJoueur;
+
 			}
+
+			else if ((Proprietes[Joueures[i].position].prix != 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur, "Gare") == 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur, "Services") != 0))//
+			{
+
+				printf("\n             Popriete            \n");
+				printf(" ___________________________________\n");
+				printf(" |                                 |\n");
+				printf(" | %-30.30s  |   * Propriete : %s\n", Proprietes[Joueures[i].position].Nom, Proprietes[Joueures[i].position].proprietaire);//
+			if(Proprietes[Joueures[i].position].hypotheque== true){printf(" |                                |   * Hypoteque        : OUI\n");}
+          else {printf(" |                                 |   * Hypoteque        : NON\n");}
+				printf(" |                                 |   * maison        : %d\n", Proprietes[Joueures[i].position].nombreDeMaisons);//
+				printf(" |couleur %-11.11sLe prix  $%4d|   * HOTEL        : %d\n", Proprietes[Joueures[i].position].Couleur, Proprietes[Joueures[i].position].prix, Proprietes[Joueures[i].position].nombreHotel);//
+				printf(" | ------------------------------- |\n");
+				printf(" |                                 |\n");
+				printf(" |   Loyer                $25      |\n");
+				printf(" |                                 |\n");
+				printf(" |   Avec 2 gare          $50      |\n");//
+				printf(" |                                 |\n");
+				printf(" |   Avec 3 gare          $100     |\n");//
+				printf(" |                                 |\n");
+				printf(" |   Avec 4 gare          $200     |\n");//
+				printf(" |                                 |\n");
+				printf(" | ------------------------------- |\n");
+				printf(" |                                 |\n");
+				printf(" |  Montant de l'hypotheque $%4d  |\n", Proprietes[Joueures[i].position].prix/2+Proprietes[Joueures[i].position].prix*10/100);//
+				printf(" |                                 |\n");
+				printf(" | ------------------------------- |\n");
+				printf(" |_________________________________|\n");
+
+                    loyer(i,nJoueures);
+                    goto menuJoueur;
+
+			}
+
+			else if ((Proprietes[Joueures[i].position].prix != 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur, "Gare") != 0)&&(strcmp(Proprietes[Joueures[i].position].Couleur, "Services") == 0))//
+			{
+
+				printf("\n             Popriete            \n");
+				printf(" ___________________________________\n");
+				printf(" |                                  |\n");
+				printf(" |%-35.35s|   * Propriete : %s\n", Proprietes[Joueures[i].position].Nom, Proprietes[Joueures[i].position].proprietaire);//
+			if(Proprietes[Joueures[i].position].hypotheque== true){printf(" |                                |   * Hypoteque        : OUI\n");}
+          else {printf(" |                                  |   * Hypoteque        : NON\n");}
+				printf(" |                                  |   * maison        : %d\n", Proprietes[Joueures[i].position].nombreDeMaisons);//
+				printf(" |couleur %-11.11sLe prix  $%4d |   * HOTEL        : %d\n", Proprietes[Joueures[i].position].Couleur, Proprietes[Joueures[i].position].prix, Proprietes[Joueures[i].position].nombreHotel);//
+				printf(" | -------------------------------- |\n");
+				printf(" |                                  |\n");
+				printf(" | Si un services public appartient |\n");
+				printf(" |  a un joueur, le loyer est egal  |\n");//
+				printf(" |     a 4x le resultat des des.    |\n");
+				printf(" |                                  |\n");//
+				printf(" |                                  |\n");
+				printf(" |    Si deux services public       |\n");
+				printf(" | appartient a un joueur, le loyer |\n");//
+				printf(" |est egal a 10x le resultat des des|\n");
+				printf(" |                                  |\n");
+				printf(" | -------------------------------- |\n");
+				printf(" |                                  |\n");
+				printf(" |  Montant de l'hypotheque $%4d   |\n", Proprietes[Joueures[i].position].prix/2+Proprietes[Joueures[i].position].prix*10/100);//
+				printf(" |                                  |\n");
+				printf(" | -------------------------------- |\n");
+				printf(" |__________________________________|\n");
+
+                    loyer(i,nJoueures);
+                    goto menuJoueur;
+
+			}
+
 			else if (strcmp(Proprietes[Joueures[i].position].Nom, "CHANCE") == 0)//
 			{
 				printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
-				printf("Retirer une carte CHANCE\n");//
+				printf("tirer une carte CHANCE\n");//
+				carteChance(i,nJoueures);
 				fflush(stdin);//
 				getchar();//
 			}
 			else if (strcmp(Proprietes[Joueures[i].position].Nom, "Caisse de communaute") == 0)//
 			{
 				printf("\n             %s           \n", Proprietes[Joueures[i].position].Nom);//
-				printf("retirer une carte Caisse de communaute...\n");//
+				printf("tirer une carte Caisse de communaute...\n");//
+				carteCaissedeCommunaute(i,nJoueures);//
 				fflush(stdin);//
 				getchar();//
 			}
@@ -1225,7 +1996,7 @@ nouveauJeu ://
 				fflush(stdin);//
 				getchar();//
 				Joueures[i].compte -= 100;//
-				printf("\nCompte actuel : %d", Joueures[i].compte);//
+				printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
 			}
 			else if (strcmp(Proprietes[Joueures[i].position].Nom, "IMPOTS SUR LE REVENU") == 0)//
 			{
@@ -1234,7 +2005,7 @@ nouveauJeu ://
 				fflush(stdin);//
 				getchar();//
 				Joueures[i].compte -= 200;//
-				printf("\nCompte actuel : %d", Joueures[i].compte);//
+				printf("\nCompte actuel de %s : %d", Joueures[i].Nom,Joueures[i].compte);//
 			}
 			else if ((strcmp(Proprietes[Joueures[i].position].Nom, "PRISON - VISITEUR") == 0) && (strcmp(Proprietes[i].Nom, "PARKING GRATUIT") == 0))//
             {
@@ -1252,7 +2023,7 @@ nouveauJeu ://
         menuJoueur://
 			printf("\n Qu'est-ce que tu veux faire?\n");//
 			printf("1 - Etat du jeu\n");//
-			if (strcmp(Proprietes[Joueures[i].position].proprietaire, "aucun proprietaire") == 0)// en fonction des cases
+			if (strcmp(Proprietes[Joueures[i].position].proprietaire, "aucun proprietaire") == 0||(Proprietes[Joueures[i].position].hypotheque== true))// en fonction des cases
 			{
 				printf("2 - Acheter une propriete\n");//
 				printf("3 - propriete aux encheres\n");//
@@ -1261,9 +2032,10 @@ nouveauJeu ://
 			{
 				printf("4 - Construire une Maison\n");//
 				printf("5 - Construire un Hotel\n");//
+                printf("6 - Vendre des constructions\n");//
+                printf("7 - Hypothequer des Propriete\n");//
 			}
-            printf("6 - Vendre des constructions\n");//
-			printf("7 - Hypothequer des Propriete\n");//
+
 			printf("0 - Terminer le tour\n");//
 
 
@@ -1277,7 +2049,7 @@ nouveauJeu ://
 
 			//2 - Acheter une propriété
 			case 2:
-				if (strcmp(Proprietes[Joueures[i].position].proprietaire, "aucun proprietaire") == 0)//
+				if (strcmp(Proprietes[Joueures[i].position].proprietaire, "aucun proprietaire") == 0||(Proprietes[Joueures[i].position].hypotheque== true))//
 					acheterPropriete(i);//
 				else goto menuJoueur;//
 				break;//
@@ -1294,6 +2066,7 @@ nouveauJeu ://
 
 			//5 - Construire un Hotel
 			case 5: construireHotel(i);//
+                    goto menuJoueur;//
 				break;//
 
 			//6 - Vendre une propriété
