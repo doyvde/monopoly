@@ -25,7 +25,7 @@ Batiment Batiments;
 typedef struct enregistrerProprietes
 {
 	char Nom[50]; //nom de la propriete
-    char localisation[50]; //localisation de la propriete
+        char localisation[50]; //localisation de la propriete
 	char Couleur[10];// couleur du quartier de la propriete
 	int prix;// bah prix de la propriete
 	int loyer[6];//loyer de la propriete c'est un tableau de 6 car loyer en fonction de l'acquistion: du terrain,1maison,2maison,3maison,4maison,hotel
