@@ -7,6 +7,11 @@ Copyright 2014-2015, Gil Ferraz e Teresa Loureiro
 #include <string.h>
 #include <stdbool.h>
 
+//mets le plateau ici 
+
+
+
+
 typedef struct nombreDeBatiment
 {
 	int nHotel;//
