@@ -6,7 +6,47 @@ Copyright 2014-2015, Gil Ferraz e Teresa Loureiro
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <windows.h>  //mets le plateau ici 
+void gotoligcol( int lig, int col ) {
+// ressources
+ COORD mycoord;
+mycoord.X = col;
+mycoord.Y = lig;
+SetConsoleCursorPosition( GetStdHandle( STD_OUTPUT_HANDLE ), mycoord );
+}
 
+void Color(int couleurDuTexte,int couleurDeFond) // fonction d'affichage de couleurs
+{
+    HANDLE H=GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(H,couleurDeFond*16+couleurDuTexte);
+}
+
+void affichePlateau(int pos){
+    int i,j;
+
+    for(i=0;i<4;i++)
+    {
+
+        for(j=0;j<8;j++)
+        {
+            Color(15,2);
+            gotoligcol(i*5,j*15);
+            if (pos==i*8+j){
+                Color(4,2);
+                printf("***case(%d)***",i*8+j);
+            }
+            else{
+
+            printf("  case(%d)   ",i*8+j);
+            }
+
+
+        }
+    }
+    printf("\n");
+    Color(15,0);
+
+}
 //mets le plateau ici 
 
 
@@ -1093,7 +1133,7 @@ void carteCaissedeCommunaute()
 
 
 int main()
-{
+{        affichePlateau(0);
 	initialiseTable();//
 
 	//Début du jeu
@@ -1139,7 +1179,7 @@ nouveauJeu ://
 	do
 	{
 		for (int i = 0; i < nJoueures; i++)//
-		{
+		{       affichePlateau(Joueures[i].position);
 			printf("\n================================= Tour %3d =================================\n", tour);//
 			printf("\n========== Joueur %d - %s ==========\n", i + 1, Joueures[i].Nom);//
 			printf(" * Compte   : %d euros\n", Joueures[i].compte);//
