@@ -17,3 +17,10 @@
 	<string.h>
 	<stdbool.h>
 
+1640612414 source:c:\users\denis\onedrive\documents\ece ing1\informatique\c\code\monopoly\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<stdbool.h>
+	<time.h>
+

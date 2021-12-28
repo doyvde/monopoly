@@ -2,17 +2,35 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
+	<File name="main.c" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="23905" topLine="126" />
+		</Cursor>
+		<Folding>
+			<Collapse line="7" />
+			<Collapse line="17" />
+			<Collapse line="35" />
+			<Collapse line="508" />
+			<Collapse line="521" />
+			<Collapse line="535" />
+			<Collapse line="563" />
+			<Collapse line="661" />
+			<Collapse line="842" />
+			<Collapse line="856" />
+			<Collapse line="941" />
+			<Collapse line="973" />
+			<Collapse line="1059" />
+			<Collapse line="1141" />
+			<Collapse line="1242" />
+			<Collapse line="1289" />
+			<Collapse line="1349" />
+			<Collapse line="1616" />
+			<Collapse line="1761" />
+		</Folding>
+	</File>
 	<File name="mabiblio.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="0" topLine="0" />
 		</Cursor>
-	</File>
-	<File name="main.c" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="38666" topLine="1063" />
-		</Cursor>
-		<Folding>
-			<Collapse line="822" />
-		</Folding>
 	</File>
 </CodeBlocks_layout_file>
