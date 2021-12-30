@@ -11,9 +11,20 @@
 	<string.h>
 	<stdbool.h>
 
-1638199018 source:c:\users\denis\onedrive\documents\ece ing1\informatique\c\code\monopoly\mesfonctions.c
+1640775201 source:c:\users\denis\onedrive\documents\ece ing1\informatique\c\code\monopoly\mesfonctions.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 	<stdbool.h>
+	<windows.h>
+
+1640862529 source:c:\users\denis\onedrive\documents\ece ing1\informatique\c\code\monopoly\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<stdbool.h>
+	<time.h>
+	"mabiblio.h"
+
+1640782532 c:\users\denis\onedrive\documents\ece ing1\informatique\c\code\monopoly\mabiblio.h
 
