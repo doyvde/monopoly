@@ -1,0 +1,45 @@
+# depslib dependency file v1.0
+1641129668 source:c:\users\denis\onedrive\documents\ece ing1\informatique\code\monopoly\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<stdbool.h>
+	<time.h>
+	"mabiblio.h"
+
+1641129326 c:\users\denis\onedrive\documents\ece ing1\informatique\code\monopoly\mabiblio.h
+
+1641131973 source:c:\users\denis\onedrive\documents\ece ing1\informatique\code\monopoly\mesfonction.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<stdbool.h>
+	<time.h>
+	"mabiblio.h"
+
+1641314774 source:c:\users\denis\onedrive\documents\ece ing1\informatique\c\code\monopoly2\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<stdbool.h>
+	<time.h>
+	"mabiblio.h"
+
+1641314380 c:\users\denis\onedrive\documents\ece ing1\informatique\c\code\monopoly2\mabiblio.h
+
+1641319499 source:c:\users\denis\onedrive\documents\ece ing1\informatique\c\code\monopoly2\mesfonction.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<stdbool.h>
+	<time.h>
+	"mabiblio.h"
+
+1641319782 source:c:\users\denis\onedrive\documents\ece ing1\informatique\c\code\monopoly2\myfonction.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<stdbool.h>
+	<time.h>
+	"mabiblio.h"
+
