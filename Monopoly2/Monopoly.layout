@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<FileVersion major="1" minor="0" />
+	<ActiveTarget name="Debug" />
+	<File name="myfonction.c" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="4" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="238597" topLine="51" />
+		</Cursor>
+		<Folding>
+			<Collapse line="10" />
+			<Collapse line="468" />
+			<Collapse line="1038" />
+			<Collapse line="1496" />
+			<Collapse line="1954" />
+			<Collapse line="2412" />
+			<Collapse line="2870" />
+			<Collapse line="3074" />
+			<Collapse line="3532" />
+			<Collapse line="3640" />
+			<Collapse line="3708" />
+			<Collapse line="3837" />
+			<Collapse line="3902" />
+			<Collapse line="3916" />
+			<Collapse line="3945" />
+			<Collapse line="4067" />
+			<Collapse line="4110" />
+			<Collapse line="4286" />
+			<Collapse line="4300" />
+			<Collapse line="4387" />
+			<Collapse line="4422" />
+			<Collapse line="4505" />
+			<Collapse line="4555" />
+			<Collapse line="4673" />
+			<Collapse line="4955" />
+		</Folding>
+	</File>
+	<File name="mesfonction.c" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="2" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="64784" topLine="422" />
+		</Cursor>
+		<Folding>
+			<Collapse line="10" />
+			<Collapse line="16" />
+			<Collapse line="474" />
+			<Collapse line="1017" />
+			<Collapse line="1933" />
+			<Collapse line="2391" />
+			<Collapse line="2849" />
+			<Collapse line="3053" />
+			<Collapse line="3161" />
+			<Collapse line="3224" />
+			<Collapse line="3346" />
+			<Collapse line="3409" />
+			<Collapse line="3423" />
+			<Collapse line="3452" />
+			<Collapse line="3571" />
+			<Collapse line="3613" />
+			<Collapse line="3788" />
+			<Collapse line="3802" />
+			<Collapse line="3889" />
+			<Collapse line="3924" />
+			<Collapse line="4004" />
+			<Collapse line="4045" />
+			<Collapse line="4052" />
+			<Collapse line="4162" />
+			<Collapse line="4169" />
+			<Collapse line="4433" />
+			<Collapse line="4448" />
+		</Folding>
+	</File>
+	<File name="main.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="162" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="mabiblio.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2176" topLine="45" />
+		</Cursor>
+	</File>
+</CodeBlocks_layout_file>
